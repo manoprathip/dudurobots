@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14291d">
+  <title>DUDU Robots — Employee Ordering</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <img src="dudu-logo-web.png" alt="DUDU Robots">
+    </a>
+    <div class="top-actions">
+      <button class="icon-btn" id="ordersBtn" aria-label="Orders">📦</button>
+      <button class="cart-btn" id="cartBtn">Cart <span id="cartCount">0</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-app">
+      <div>
+        <p class="eyebrow">DUDU ROBOTS · GLOBO</p>
+        <h1>Lunch delivered<br><em>to your shop.</em></h1>
+        <p>Choose a restaurant, order your food and let DUDU bring it to you.</p>
+      </div>
+      <div class="robot-mark">🤖</div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow dark">ORDER NOW</p>
+          <h2>Choose a restaurant</h2>
+        </div>
+      </div>
+      <div id="restaurants" class="restaurant-grid"></div>
+    </section>
+
+    <section class="section hidden" id="menuSection">
+      <div class="section-head">
+        <button class="back-btn" id="backBtn">← Restaurants</button>
+        <div>
+          <p class="eyebrow dark" id="menuKicker"></p>
+          <h2 id="menuTitle"></h2>
+        </div>
+      </div>
+      <div id="menuItems" class="menu-list"></div>
+    </section>
+
+    <section class="section hidden" id="ordersSection">
+      <div class="section-head">
+        <button class="back-btn" id="closeOrdersBtn">← Order</button>
+        <div>
+          <p class="eyebrow dark">MY ORDERS</p>
+          <h2>Order status</h2>
+        </div>
+      </div>
+      <div id="ordersList"></div>
+    </section>
+  </main>
+
+  <div class="drawer hidden" id="cartDrawer">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <div>
+          <p class="eyebrow dark">YOUR ORDER</p>
+          <h2>Cart</h2>
+        </div>
+        <button class="close-btn" id="closeCartBtn">×</button>
+      </div>
+      <div id="cartItems"></div>
+      <div class="cart-total"><span>Total</span><strong id="cartTotal">€0.00</strong></div>
+      <form id="checkoutForm" class="checkout">
+        <label>Your name
+          <input name="name" required placeholder="e.g. Mohana">
+        </label>
+        <label>Shop / workplace
+          <input name="location" required placeholder="e.g. Shop 24">
+        </label>
+        <button class="primary" type="submit">Place DUDU order →</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>

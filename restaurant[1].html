@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DUDU — Restaurant Dashboard</title><link rel="stylesheet" href="restaurant.css">
+</head>
+<body>
+<header><div class="brand"><img src="dudu-logo-web.png" alt="DUDU Robots"><span>Restaurant Dashboard</span></div><div class="status"><span class="dot"></span> Online</div></header>
+<main>
+<section class="welcome"><div><p>DUDU ROBOTS · GLOBO</p><h1>Orders</h1><span>Manage orders from employees and prepare them for DUDU pickup.</span></div><div class="clock" id="clock"></div></section>
+<section class="stats">
+<div><small>NEW</small><strong id="newCount">0</strong></div><div><small>PREPARING</small><strong id="prepCount">0</strong></div><div><small>READY FOR DUDU</small><strong id="readyCount">0</strong></div><div><small>COMPLETED</small><strong id="doneCount">0</strong></div>
+</section>
+<section class="board">
+<div class="column"><h2>New Orders</h2><div id="new"></div></div>
+<div class="column"><h2>Preparing</h2><div id="preparing"></div></div>
+<div class="column"><h2>Ready for DUDU</h2><div id="ready"></div></div>
+<div class="column"><h2>Completed</h2><div id="completed"></div></div>
+</section>
+</main>
+<div id="toast" class="toast hidden"></div>
+<script src="restaurant.js"></script>
+</body></html>

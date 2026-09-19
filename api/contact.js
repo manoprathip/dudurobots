@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'DUDU Website <onboarding@resend.dev>',
+        from: 'DUDU Robots <info@dudurobots.eu>',
         to: ['info@dudurobots.eu'],
         reply_to: email,
         subject: `DUDU demo request — ${name}`,

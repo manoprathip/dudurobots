@@ -47,24 +47,41 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-5.2',
+        model: 'gpt-5.6-luna',
         instructions,
-        input: messages
+        input: messages,
+        max_output_tokens: 500
       })
     });
 
+    const responseText = await response.text();
+
     if (!response.ok) {
-      const error = await response.text();
-      console.error('OpenAI error:', error);
+      console.error('OpenAI error:', responseText);
       return res.status(502).json({ error: 'Unable to generate an AI response.' });
     }
 
-    const data = await response.json();
-    const answer = typeof data.output_text === 'string'
-      ? data.output_text.trim()
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      console.error('Invalid OpenAI JSON response:', responseText);
+      return res.status(502).json({ error: 'Invalid AI response.' });
+    }
+
+    // The raw Responses API returns generated text inside output[].content[].
+    // output_text is an SDK convenience property and is not guaranteed in raw HTTP JSON.
+    const answer = Array.isArray(data.output)
+      ? data.output
+          .flatMap(item => Array.isArray(item.content) ? item.content : [])
+          .filter(item => item && item.type === 'output_text' && typeof item.text === 'string')
+          .map(item => item.text)
+          .join('\n')
+          .trim()
       : '';
 
     if (!answer) {
+      console.error('OpenAI returned no output text:', JSON.stringify(data));
       return res.status(502).json({ error: 'The AI returned an empty response.' });
     }
 

@@ -57,6 +57,7 @@
 .cta-strip{padding:100px 9%;background:#78c742;color:#14291d;display:flex;justify-content:space-between;gap:40px;align-items:end}
 .cta-strip h2{font-size:clamp(45px,5vw,70px)}
 .cta-strip p{max-width:340px;line-height:1.7;font-size:14px}
+.message-field{grid-column:1 / -1}.message-field textarea{width:100%;min-height:120px;resize:vertical;padding:14px 0;border:1px solid #b9d5bd;background:transparent;color:#14291d;font:14px Manrope,sans-serif;box-sizing:border-box}.message-field textarea:focus{outline:none;border-color:#78c742}.message-field textarea::placeholder{color:#8a978e}
 @media(max-width:800px){
  .business-intro,.workflow,.pilot,.media-section{padding:80px 24px}
  .business-intro .intro-grid,.pilot-grid,.media-grid{grid-template-columns:1fr;gap:30px}
@@ -237,6 +238,7 @@
     <label>Work email<input name="email" type="email" required placeholder="you@company.com"></label>
     <label>Organisation<input name="organisation" placeholder="Company or institution"></label>
     <label>I'm interested in<select name="interest"><option>Shopping centre / mall</option><option>Restaurant or food delivery</option><option>Retail delivery</option><option>Brand advertising</option><option>Technology partnership</option><option>Another opportunity</option></select></label>
+    <label class="message-field">Message<textarea name="message" rows="5" placeholder="Tell us more about your needs, questions or project idea..."></textarea></label>
     <button class="button dark" type="submit">Request a meeting <b>↗</b></button>
     <p class="status" aria-live="polite"></p>
   </form>

@@ -34,7 +34,7 @@ export default async function handler(req, res) {
           `Organisation: ${organisation || 'Not provided'}`,
           `Interest: ${interest || 'Not provided'}`,
           `Message: ${message || 'Not provided'}`
-        ].join('\\n')
+        ].join('\n')
       })
     });
 

@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, organisation, interest } = req.body || {};
+    const { name, email, organisation, interest, message } = req.body || {};
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Name and email are required.' });
@@ -32,7 +32,8 @@ export default async function handler(req, res) {
           `Name: ${name}`,
           `Email: ${email}`,
           `Organisation: ${organisation || 'Not provided'}`,
-          `Interest: ${interest || 'Not provided'}`
+          `Interest: ${interest || 'Not provided'}`,
+          `Message: ${message || 'Not provided'}`
         ].join('\\n')
       })
     });

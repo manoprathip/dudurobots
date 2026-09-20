@@ -88,8 +88,8 @@ function showTracking(order){
  document.querySelector("#tracking-copy").textContent=state[1];
  const orderEl=document.querySelector("#tracking-robot");
  if(orderEl)orderEl.textContent=order.assigned_robot?order.assigned_robot+" · "+state[2]:state[2];
- const steps=["ORDER","PREPARING","LOADED","ON THE WAY","ARRIVED"];
- const statusIndex=order.status==="DELIVERING"?3:steps.indexOf(order.status);
+ const steps=["ORDER","PREPARING","READY","LOADED","ON THE WAY","ARRIVED"];
+ const statusIndex=order.status==="DELIVERING"?4:steps.indexOf(order.status);
  const idx=Math.max(statusIndex,0);
  document.querySelector("#progress-bar").style.width=((idx/(steps.length-1))*100)+"%";
  document.querySelectorAll("[data-track-step]").forEach((el,i)=>{
@@ -125,3 +125,4 @@ function restoreLatestTracking(){
  }catch(e){}
 }
 buildSlots();renderMerchants();renderCart();refreshRemoteSlots();
+restoreLatestTracking();

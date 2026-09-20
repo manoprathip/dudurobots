@@ -8,7 +8,7 @@ async function remoteBookings(){
  try{const r=await fetch("../api/slots?date="+encodeURIComponent(dateInput.value));if(!r.ok)throw new Error();const d=await r.json();return d.counts||{}}
  catch(e){return null}
 }
-function buildSchedule(){
+async function buildSchedule(){
  const cap=Math.max(1,Math.min(20,Number(capacityInput.value)||4));localStorage.setItem("duduSlotCapacity",cap);
  const remote=await remoteBookings(); const data=remote||bookings(),slots=[];
  for(let h=11;h<=21;h++){for(let m=0;m<60;m+=15){if(h===21&&m>0)continue;const endH=h+(m===45?1:0),endM=(m+15)%60;const s=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+"–"+String(endH).padStart(2,"0")+":"+String(endM).padStart(2,"0");const used=data[dateInput.value+"|"+s]||0;slots.push({s,used})}}

@@ -10,4 +10,35 @@ create table if not exists public.dudu_orders (
   created_at timestamptz not null default now()
 );
 create index if not exists dudu_orders_slot_idx on public.dudu_orders(delivery_date, delivery_slot);
+
+create table if not exists public.dudu_slot_settings (
+  id boolean primary key default true,
+  capacity integer not null default 4 check (capacity between 1 and 20)
+);
+insert into public.dudu_slot_settings(id,capacity) values(true,4) on conflict (id) do nothing;
+
+create or replace function public.create_dudu_order(
+  p_order_id text,p_delivery_date date,p_delivery_slot text,p_destination text,p_note text,p_merchant text
+) returns jsonb
+language plpgsql
+security definer
+as $$
+declare
+  cap integer;
+  used integer;
+begin
+  perform pg_advisory_xact_lock(hashtext(p_delivery_date::text || '|' || p_delivery_slot));
+  select capacity into cap from public.dudu_slot_settings where id=true;
+  select count(*) into used from public.dudu_orders
+    where delivery_date=p_delivery_date and delivery_slot=p_delivery_slot and status <> 'CANCELLED';
+  if used >= cap then
+    return jsonb_build_object('ok',false,'reason','FULL','capacity',cap,'used',used);
+  end if;
+  insert into public.dudu_orders(order_id,delivery_date,delivery_slot,destination,note,merchant)
+  values(p_order_id,p_delivery_date,p_delivery_slot,p_destination,coalesce(p_note,''),p_merchant);
+  return jsonb_build_object('ok',true,'capacity',cap,'used',used+1);
+end;
+$$;
+
 alter table public.dudu_orders enable row level security;
+alter table public.dudu_slot_settings enable row level security;

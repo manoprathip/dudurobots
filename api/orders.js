@@ -5,7 +5,11 @@ export default async function handler(req,res){
  try{
   if(req.method==="GET"){
    const limit=Math.min(Math.max(Number(req.query?.limit||50),1),100);
-   const r=await fetch(url+"/rest/v1/dudu_orders?select=id,order_id,delivery_date,delivery_slot,destination,note,merchant,status,assigned_robot,created_at,updated_at&order=created_at.desc&limit="+limit,{
+   const apiUrl=new URL("/rest/v1/dudu_orders",url.endsWith("/")?url:url+"/");
+   apiUrl.searchParams.set("select","id,order_id,delivery_date,delivery_slot,destination,note,merchant,status,assigned_robot,created_at,updated_at");
+   apiUrl.searchParams.set("order","created_at.desc");
+   apiUrl.searchParams.set("limit",String(limit));
+   const r=await fetch(apiUrl.toString(),{
     headers:{apikey:key,Authorization:"Bearer "+key}
    });
    const data=await r.json(); if(!r.ok)return res.status(r.status).json({error:data});

@@ -44,6 +44,14 @@ export default async function handler(req,res){
    const r=await fetch(patchUrl.toString(),{method:"PATCH",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify(patch)});
    const data=await r.json(); if(!r.ok)return res.status(r.status).json({error:data});
    if(!data.length)return res.status(404).json({error:"Order not found"});
+   if((b.assigned_robot!==undefined || b.status!==undefined) && data[0].assigned_robot){
+    const robotUrl=new URL("/rest/v1/dudu_robots",url.endsWith("/")?url:url+"/");
+    robotUrl.searchParams.set("robot_id","eq."+encodeURIComponent(data[0].assigned_robot));
+    const robotPatch={updated_at:new Date().toISOString(),last_seen:new Date().toISOString()};
+    if(["LOADED","ON THE WAY","DELIVERING"].includes(data[0].status)){robotPatch.status="DELIVERING";robotPatch.order_id=data[0].order_id}
+    if(["ARRIVED","CANCELLED"].includes(data[0].status)){robotPatch.status="AVAILABLE";robotPatch.order_id=null}
+    await fetch(robotUrl.toString(),{method:"PATCH",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify(robotPatch)});
+   }
    return res.status(200).json({order:data[0]});
   }
   return res.status(405).json({error:"Method not allowed"});

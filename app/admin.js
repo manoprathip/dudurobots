@@ -1,5 +1,5 @@
 const capacityInput=document.querySelector("#slot-capacity-setting"),dateInput=document.querySelector("#schedule-date"),schedule=document.querySelector("#slot-schedule");
-const orderTable=document.querySelector("#order-table"),refreshOrdersButton=document.querySelector("#refresh-orders");
+const orderTable=document.querySelector("#order-table"),refreshOrdersButton=document.querySelector("#refresh-orders"),robotList=document.querySelector("#robot-list");
 const defaultCapacity=Number(localStorage.getItem("duduSlotCapacity")||4);capacityInput.value=defaultCapacity;
 const today=new Date().toISOString().slice(0,10);dateInput.min=today;dateInput.value=today;
 
@@ -22,6 +22,21 @@ async function buildSchedule(){
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function statusClass(s){return s==="ON THE WAY"||s==="DELIVERING"?"delivery":s==="READY"?"ready":s==="ARRIVED"?"arrived":""}
 function statusOptions(current){return ["ORDER","PREPARING","READY","LOADED","ON THE WAY","DELIVERING","ARRIVED","CANCELLED"].map(s=>`<option ${s===current?"selected":""}>${s}</option>`).join("")}
+function robotClass(status){return status==="CHARGING"?"amber":status==="OFFLINE"?"muted":"green"}
+function robotLabel(robot){
+ const status=robot.status==="DELIVERING"?"Delivering":robot.status==="CHARGING"?"Charging":robot.status==="OFFLINE"?"Offline":"Available";
+ return robot.order_id?status+" · "+robot.order_id:status+" · "+(robot.mode||"Ready");
+}
+async function loadRobots(){
+ if(!robotList)return;
+ try{
+  const r=await fetch("../api/robots?ts="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error();
+  const data=await r.json(),robots=data.robots||[];
+  robotList.innerHTML=robots.map(robot=>`<div class="robot"><div class="robot-icon">D</div><div><strong>${esc(robot.robot_id)}</strong><span>${esc(robotLabel(robot))} · ${Number(robot.battery)}%</span></div><b class="${robotClass(robot.status)}">●</b></div>`).join("")||'<div class="order-empty">No robots configured.</div>';
+ }catch(e){
+  robotList.innerHTML='<div class="order-error">Fleet service unavailable. Run the fleet SQL setup first.</div>';
+ }
+}
 async function loadOrders(){
  orderTable.innerHTML='<div class="order-loading">Loading live orders…</div>';
  try{
@@ -52,5 +67,5 @@ async function updateOrder(id,status,robot){
  if(!r.ok){alert("Could not update this order.");return}
  await loadOrders();
 }
-capacityInput.addEventListener("change",buildSchedule);dateInput.addEventListener("change",buildSchedule);refreshOrdersButton?.addEventListener("click",loadOrders);
-buildSchedule();loadOrders();
+capacityInput.addEventListener("change",buildSchedule);dateInput.addEventListener("change",buildSchedule);refreshOrdersButton?.addEventListener("click",()=>{loadOrders();loadRobots()});
+buildSchedule();loadOrders();loadRobots();setInterval(loadRobots,10000);

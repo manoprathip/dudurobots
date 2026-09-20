@@ -18,7 +18,8 @@ export default async function handler(req,res){
   if(req.method==="POST"){
    const b=req.body||{};
    for(const k of ["id","date","slot","destination","merchant"])if(!b[k])return res.status(400).json({error:"Missing "+k});
-   const r=await fetch(url+"/rest/v1/rpc/create_dudu_order",{method:"POST",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({p_order_id:b.id,p_delivery_date:b.date,p_delivery_slot:b.slot,p_destination:b.destination,p_note:b.note||"",p_merchant:b.merchant})});
+   const rpcUrl=new URL("/rest/v1/rpc/create_dudu_order",url.endsWith("/")?url:url+"/");
+   const r=await fetch(rpcUrl.toString(),{method:"POST",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({p_order_id:b.id,p_delivery_date:b.date,p_delivery_slot:b.slot,p_destination:b.destination,p_note:b.note||"",p_merchant:b.merchant})});
    const data=await r.json(); if(!r.ok)return res.status(r.status).json({error:data});
    if(!data.ok)return res.status(409).json({error:"This delivery slot is full.",capacity:data.capacity,used:data.used});
    return res.status(201).json({ok:true,capacity:data.capacity,used:data.used});
@@ -31,7 +32,9 @@ export default async function handler(req,res){
    const patch={updated_at:new Date().toISOString()};
    if(b.status)patch.status=b.status;
    if("assigned_robot" in b)patch.assigned_robot=b.assigned_robot||null;
-   const r=await fetch(url+"/rest/v1/dudu_orders?order_id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify(patch)});
+   const patchUrl=new URL("/rest/v1/dudu_orders",url.endsWith("/")?url:url+"/");
+   patchUrl.searchParams.set("order_id","eq."+id);
+   const r=await fetch(patchUrl.toString(),{method:"PATCH",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify(patch)});
    const data=await r.json(); if(!r.ok)return res.status(r.status).json({error:data});
    if(!data.length)return res.status(404).json({error:"Order not found"});
    return res.status(200).json({order:data[0]});

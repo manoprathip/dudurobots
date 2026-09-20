@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14291d">
+<title>DUDU Delivery — Customer</title>
+<link rel="icon" type="image/png" href="../dudu-logo-web.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="app-header">
+  <a class="brand" href="../"><img src="../dudu-logo-web.png" alt="DUDU Robots"></a>
+  <div class="header-location">GLOBO · BUSNAGO <span class="dot"></span> IT</div>
+  <a class="admin-link" href="admin.html">Operations ↗</a>
+</header>
+<main>
+  <section class="welcome">
+    <div>
+      <p class="eyebrow">DUDU DELIVERY / GLOBO</p>
+      <h1>Food & retail,<br><em>delivered by DUDU.</em></h1>
+      <p class="lead">Order from participating shops and restaurants inside the centre. DUDU brings it to your destination.</p>
+    </div>
+    <div class="status-card"><span class="status-dot"></span><strong>DUDU is online</strong><small>Delivery service available</small></div>
+  </section>
+
+  <section class="order-shell">
+    <div class="section-head"><div><p class="eyebrow">01 / CHOOSE</p><h2>What would you like?</h2></div><span class="step-count">STEP 1 OF 3</span></div>
+    <div class="categories">
+      <button class="category active" data-category="all">All <span>6</span></button>
+      <button class="category" data-category="food">Food <span>3</span></button>
+      <button class="category" data-category="retail">Retail <span>3</span></button>
+    </div>
+    <div class="merchant-grid" id="merchant-grid"></div>
+  </section>
+
+  <section class="checkout" id="checkout">
+    <div class="section-head"><div><p class="eyebrow">02 / DELIVERY</p><h2>Your delivery</h2></div><span class="step-count">STEP 2 OF 3</span></div>
+    <div class="checkout-grid">
+      <div class="destination-card">
+        <label>Destination</label>
+        <select id="destination">
+          <option>Globo · Ground Floor · Main Entrance</option>
+          <option>Globo · Food Court</option>
+          <option>Globo · Parking Entrance</option>
+          <option>Globo · Shop / Staff Delivery</option>
+        </select>
+        <label>Order note <span>optional</span></label>
+        <textarea id="note" placeholder="For example: call me when DUDU arrives."></textarea>
+      </div>
+      <aside class="cart-card">
+        <div class="cart-top"><span>YOUR ORDER</span><strong id="cart-count">0 items</strong></div>
+        <div id="cart-items" class="cart-items"><p class="empty">Choose a restaurant or shop above.</p></div>
+        <div class="total"><span>Total</span><strong id="cart-total">€0.00</strong></div>
+        <button class="primary" id="place-order" disabled>Continue to tracking <b>↗</b></button>
+      </aside>
+    </div>
+  </section>
+
+  <section class="tracking hidden" id="tracking">
+    <div class="section-head"><div><p class="eyebrow">03 / TRACK</p><h2>DUDU is on the move.</h2></div><span class="order-id" id="order-id">DUDU-0000</span></div>
+    <div class="tracking-card">
+      <div class="tracking-status"><span class="live-dot"></span><div><strong id="tracking-title">Order received</strong><p id="tracking-copy">The store is preparing your order.</p></div></div>
+      <div class="progress-track"><span id="progress-bar"></span></div>
+      <div class="tracking-steps"><span class="done">ORDER</span><span class="active-step">PREPARING</span><span>LOADED</span><span>ON THE WAY</span><span>ARRIVED</span></div>
+      <div class="eta"><span>ESTIMATED DELIVERY</span><strong>10–15 min</strong></div>
+    </div>
+  </section>
+</main>
+<footer><span>DUDU / AUTONOMOUS DELIVERY</span><span>Centro Commerciale Globo · Busnago</span><a href="../">Back to dudurobots.eu ↗</a></footer>
+<script src="app.js"></script>
+</body>
+</html>

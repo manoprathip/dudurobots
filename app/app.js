@@ -59,8 +59,9 @@ place.onclick=async()=>{
    if(!response.ok)throw new Error("API unavailable");
    const data=await response.json();remoteCounts[key]=data.used;
  }catch(e){
-   bookings[key]=used+1;setBookings(bookings);
-   console.warn("DUDU backend not configured; using local demo booking.",e);
+   alert("We could not confirm your order right now. Please try again.");
+   console.error("DUDU order service unavailable.",e);
+   return;
  }
  const orders=JSON.parse(localStorage.getItem("duduOrders")||"[]");orders.unshift(order);localStorage.setItem("duduOrders",JSON.stringify(orders.slice(0,100)));
  document.querySelector("#tracking").classList.remove("hidden");document.querySelector("#order-id").textContent=order.id;document.querySelector("#tracking-title").textContent="Order received";document.querySelector("#tracking-copy").textContent="Your order is confirmed for "+order.date+" · "+order.slot+".";document.querySelector("#tracking").scrollIntoView({behavior:"smooth"});updateSlotNote();

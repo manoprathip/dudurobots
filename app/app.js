@@ -1,0 +1,16 @@
+const merchants=[
+ {name:"Go Spesa",type:"FOOD / RETAIL",category:"food",desc:"Food, drinks & everyday essentials",price:"€2.50 delivery"},
+ {name:"Food Court",type:"FOOD",category:"food",desc:"Participating restaurants at Globo",price:"€2.50 delivery"},
+ {name:"Café & Snacks",type:"FOOD",category:"food",desc:"Coffee, snacks & quick bites",price:"€2.00 delivery"},
+ {name:"Globo Retail",type:"RETAIL",category:"retail",desc:"Selected products from participating shops",price:"€2.50 delivery"},
+ {name:"Shop to Staff",type:"RETAIL",category:"retail",desc:"Move products between stores and staff areas",price:"€2.00 delivery"},
+ {name:"Click & Collect",type:"RETAIL",category:"retail",desc:"Bring a ready order to your collection point",price:"€2.00 delivery"}
+];
+let cart=[];
+const grid=document.querySelector("#merchant-grid"), items=document.querySelector("#cart-items"), total=document.querySelector("#cart-total"), count=document.querySelector("#cart-count"), place=document.querySelector("#place-order");
+function renderMerchants(filter="all"){grid.innerHTML=merchants.filter(m=>filter==="all"||m.category===filter).map((m,i)=>`<article class="merchant"><div><span class="merchant-type">${m.type}</span><h3>${m.name}</h3><p>${m.desc}</p></div><button data-add="${m.name}">Start an order <b>→</b><br><small>${m.price}</small></button></article>`).join("");grid.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>add(b.dataset.add))}
+function add(name){cart.push({name,price:name==="Café & Snacks"?4.5:name==="Go Spesa"?12:8});renderCart();document.querySelector("#checkout").scrollIntoView({behavior:"smooth",block:"start"})}
+function renderCart(){count.textContent=cart.length+" item"+(cart.length===1?"":"s");if(!cart.length){items.innerHTML='<p class="empty">Choose a restaurant or shop above.</p>';total.textContent="€0.00";place.disabled=true;return}items.innerHTML=cart.map((x,i)=>`<div class="cart-line"><span>${x.name}</span><strong>€${x.price.toFixed(2)} <button data-remove="${i}">×</button></strong></div>`).join("");total.textContent="€"+(cart.reduce((s,x)=>s+x.price,0)+2.5).toFixed(2);place.disabled=false;items.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.remove),1);renderCart()})}
+document.querySelectorAll(".category").forEach(b=>b.onclick=()=>{document.querySelectorAll(".category").forEach(x=>x.classList.remove("active"));b.classList.add("active");renderMerchants(b.dataset.category)});
+place.onclick=()=>{document.querySelector("#tracking").classList.remove("hidden");document.querySelector("#order-id").textContent="DUDU-"+Math.floor(1000+Math.random()*8999);document.querySelector("#tracking").scrollIntoView({behavior:"smooth"});let progress=25;setInterval(()=>{progress=Math.min(progress+25,100);document.querySelector("#progress-bar").style.width=progress+"%";const states=[["Order received","The store is preparing your order."],["Order being prepared","The store is preparing your order."],["Loaded into DUDU","Your order is secured inside DUDU."],["DUDU on the way","DUDU is travelling to your destination."],["Arrived","DUDU has arrived."]];const idx=Math.min(Math.floor(progress/25),4);document.querySelector("#tracking-title").textContent=states[idx][0];document.querySelector("#tracking-copy").textContent=states[idx][1]},3500,{})};
+renderMerchants();renderCart();

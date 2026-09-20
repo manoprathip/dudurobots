@@ -12,7 +12,12 @@ const SLOT_CAPACITY=4;
 function slotKey(){return dateInput?.value+"|"+slotSelect?.value}
 function getBookings(){try{return JSON.parse(localStorage.getItem("duduSlotBookings")||"{}")}catch{return {}}}
 function setBookings(v){localStorage.setItem("duduSlotBookings",JSON.stringify(v))}
-function getSlotCount(){return getBookings()[slotKey()]||0}
+let remoteCounts={};
+async function refreshRemoteSlots(){
+  if(!dateInput?.value)return;
+  try{const r=await fetch("../api/slots?date="+encodeURIComponent(dateInput.value));if(!r.ok)throw new Error();const data=await r.json();remoteCounts=data.counts||{};updateSlotNote()}catch(e){}
+}
+function getSlotCount(){return remoteCounts[slotKey()] ?? (getBookings()[slotKey()]||0)}
 function buildSlots(){
  if(!slotSelect||!dateInput)return;
  const now=new Date(),today=now.toISOString().slice(0,10);
@@ -36,8 +41,8 @@ function updateSlotNote(){
  }
  if(place)place.disabled=!cart.length||remaining===0;
 }
-slotSelect?.addEventListener("change",updateSlotNote);
-dateInput?.addEventListener("change",updateSlotNote);
+slotSelect?.addEventListener("change",()=>{updateSlotNote();refreshRemoteSlots()});
+dateInput?.addEventListener("change",()=>{updateSlotNote();refreshRemoteSlots()});
 
 const grid=document.querySelector("#merchant-grid"),items=document.querySelector("#cart-items"),total=document.querySelector("#cart-total"),count=document.querySelector("#cart-count"),place=document.querySelector("#place-order");
 function renderMerchants(filter="all"){grid.innerHTML=merchants.filter(m=>filter==="all"||m.category===filter).map(m=>`<article class="merchant"><div><span class="merchant-type">${m.type}</span><h3>${m.name}</h3><p>${m.desc}</p></div><button data-add="${m.name}">Start an order <b>→</b><br><small>${m.price}</small></button></article>`).join("");grid.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>add(b.dataset.add))}
@@ -50,7 +55,11 @@ place.onclick=()=>{
  bookings[key]=used+1;setBookings(bookings);
  const order={id:"DUDU-"+Math.floor(1000+Math.random()*8999),date:dateInput.value,slot:slotSelect.value,destination:document.querySelector("#destination").value,note:document.querySelector("#note").value,merchant:cart.map(x=>x.name).join(", "),createdAt:new Date().toISOString(),status:"ORDER"};
  const orders=JSON.parse(localStorage.getItem("duduOrders")||"[]");orders.unshift(order);localStorage.setItem("duduOrders",JSON.stringify(orders.slice(0,100)));
+ try{
+   const response=await fetch("../api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(order)});
+   if(!response.ok) throw new Error("API unavailable");
+ }catch(e){ console.warn("DUDU backend not configured; keeping local demo order.",e); }
  document.querySelector("#tracking").classList.remove("hidden");document.querySelector("#order-id").textContent=order.id;document.querySelector("#tracking").scrollIntoView({behavior:"smooth"});updateSlotNote();
  let progress=25;const timer=setInterval(()=>{progress=Math.min(progress+25,100);document.querySelector("#progress-bar").style.width=progress+"%";const states=[["Order received","The store is preparing your order."],["Order being prepared","The store is preparing your order."],["Loaded into DUDU","Your order is secured inside DUDU."],["DUDU on the way","DUDU is travelling to your destination."],["Arrived","DUDU has arrived."]];const idx=Math.min(Math.floor(progress/25),4);document.querySelector("#tracking-title").textContent=states[idx][0];document.querySelector("#tracking-copy").textContent=states[idx][1];if(progress===100)clearInterval(timer)},3500)
 };
-buildSlots();renderMerchants();renderCart();
+buildSlots();renderMerchants();renderCart();refreshRemoteSlots();

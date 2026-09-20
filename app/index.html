@@ -37,7 +37,8 @@
   <section class="checkout" id="checkout">
     <div class="section-head"><div><p class="eyebrow">02 / DELIVERY</p><h2>Your delivery</h2></div><span class="step-count">STEP 2 OF 3</span></div>
     <div class="checkout-grid">
-      <div class="destination-card"><div class="slot-card"><div class="slot-head"><div><label>Delivery time</label><p>Choose a 15-minute slot. You can order in advance.</p></div><span class="slot-badge">15 MIN</span></div><div class="slot-controls"><div><span class="slot-label">DATE</span><input type="date" id="delivery-date"></div><div><span class="slot-label">TIME SLOT</span><select id="delivery-slot"></select></div></div><div class="slot-note" id="slot-note">Select a time slot to reserve your delivery.</div></div>
+      <div class="destination-card"><div class="slot-card"><div class="slot-head"><div><label>Delivery time</label><p>Choose a 15-minute slot. You can order in advance.</p></div><span class="slot-badge">15 MIN</span></div><div class="slot-controls"><div><span class="slot-label">DATE</span><input type="date" id="delivery-date"></div><div><span class="slot-label">TIME SLOT</span><select id="delivery-slot"></select></div></div><div class="slot-note" id="slot-note">Select a time slot to reserve your delivery.</div>
+        <div class="slot-capacity" id="slot-capacity">Loading slot availability…</div></div>
         <label>Destination</label>
         <select id="destination">
           <option>Globo · Ground Floor · Main Entrance</option>
@@ -53,6 +54,7 @@
         <div id="cart-items" class="cart-items"><p class="empty">Choose a restaurant or shop above.</p></div>
         <div class="total"><span>Total</span><strong id="cart-total">€0.00</strong></div>
         <button class="primary" id="place-order" disabled>Continue to tracking <b>↗</b></button>
+        <p class="booking-note">Your selected slot is saved with this demo order.</p>
       </aside>
     </div>
   </section>

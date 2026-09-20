@@ -1,8 +1,8 @@
-const orders=[["#1048","Go Spesa","Food Court","ON THE WAY"],["#1047","Food Court","Main Entrance","READY"],["#1046","Globo Retail","Shop 42","PREPARING"],["#1045","Click & Collect","Staff Area","DELIVERING"]];
-document.querySelector("#order-table").innerHTML=orders.map(o=>`<div class="order-row"><strong>${o[0]}</strong><strong>${o[1]}</strong><span>${o[2]}</span><b class="badge ${o[3]==="ON THE WAY"?"delivery":o[3]==="READY"?"ready":""}">${o[3]}</b></div>`).join("");
 const capacityInput=document.querySelector("#slot-capacity-setting"),dateInput=document.querySelector("#schedule-date"),schedule=document.querySelector("#slot-schedule");
+const orderTable=document.querySelector("#order-table"),refreshOrdersButton=document.querySelector("#refresh-orders");
 const defaultCapacity=Number(localStorage.getItem("duduSlotCapacity")||4);capacityInput.value=defaultCapacity;
 const today=new Date().toISOString().slice(0,10);dateInput.min=today;dateInput.value=today;
+
 function bookings(){try{return JSON.parse(localStorage.getItem("duduSlotBookings")||"{}")}catch{return {}}}
 async function remoteBookings(){
  try{const r=await fetch("../api/slots?date="+encodeURIComponent(dateInput.value));if(!r.ok)throw new Error();const d=await r.json();return d.counts||{}}
@@ -10,8 +10,47 @@ async function remoteBookings(){
 }
 async function buildSchedule(){
  const cap=Math.max(1,Math.min(20,Number(capacityInput.value)||4));localStorage.setItem("duduSlotCapacity",cap);
- const remote=await remoteBookings(); const data=remote||bookings(),slots=[];
- for(let h=11;h<=21;h++){for(let m=0;m<60;m+=15){if(h===21&&m>0)continue;const endH=h+(m===45?1:0),endM=(m+15)%60;const s=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+"–"+String(endH).padStart(2,"0")+":"+String(endM).padStart(2,"0");const used=data[dateInput.value+"|"+s]||0;slots.push({s,used})}}
+ const remote=await remoteBookings(),data=remote||bookings(),slots=[];
+ for(let h=11;h<=21;h++)for(let m=0;m<60;m+=15){
+   if(h===21&&m>0)continue;
+   const endH=h+(m===45?1:0),endM=(m+15)%60;
+   const s=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+"–"+String(endH).padStart(2,"0")+":"+String(endM).padStart(2,"0");
+   const used=data[s]||data[dateInput.value+"|"+s]||0;slots.push({s,used});
+ }
  schedule.innerHTML=slots.map(x=>{const full=x.used>=cap;return `<div class="schedule-slot ${full?"full":""}"><div><strong>${x.s}</strong><span>${full?"FULL":"OPEN"}</span></div><div class="capacity-bar"><i style="width:${Math.min(100,(x.used/cap)*100)}%"></i></div><b>${x.used} / ${cap}</b></div>`}).join("");
 }
-capacityInput.addEventListener("change",buildSchedule);dateInput.addEventListener("change",buildSchedule);buildSchedule();
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function statusClass(s){return s==="ON THE WAY"||s==="DELIVERING"?"delivery":s==="READY"?"ready":s==="ARRIVED"?"arrived":""}
+function statusOptions(current){return ["ORDER","PREPARING","READY","LOADED","ON THE WAY","DELIVERING","ARRIVED","CANCELLED"].map(s=>`<option ${s===current?"selected":""}>${s}</option>`).join("")}
+async function loadOrders(){
+ orderTable.innerHTML='<div class="order-loading">Loading live orders…</div>';
+ try{
+  const r=await fetch("../api/orders?limit=50");if(!r.ok)throw new Error("orders");
+  const data=await r.json(),orders=data.orders||[];
+  document.querySelector("#active-orders").textContent=orders.filter(o=>!["ARRIVED","CANCELLED"].includes(o.status)).length;
+  if(!orders.length){orderTable.innerHTML='<div class="order-empty">No live orders yet. Create one from the customer app.</div>';return}
+  orderTable.innerHTML=orders.map(o=>`<div class="live-order">
+   <div class="live-order-main">
+    <div class="order-top"><strong>${esc(o.order_id)}</strong><span>${esc(o.delivery_date)} · ${esc(o.delivery_slot)}</span></div>
+    <div class="order-details"><b>${esc(o.merchant)}</b><span>${esc(o.destination)}</span>${o.note?`<span>Note: ${esc(o.note)}</span>`:""}</div>
+   </div>
+   <div class="order-controls">
+    <select data-status="${esc(o.order_id)}" aria-label="Order status">${statusOptions(o.status)}</select>
+    <select data-robot="${esc(o.order_id)}" aria-label="Assigned robot"><option value="">Unassigned</option><option ${o.assigned_robot==="DUDU-01"?"selected":""}>DUDU-01</option><option ${o.assigned_robot==="DUDU-02"?"selected":""}>DUDU-02</option><option ${o.assigned_robot==="DUDU-03"?"selected":""}>DUDU-03</option></select>
+   </div>
+  </div>`).join("");
+  orderTable.querySelectorAll("[data-status]").forEach(el=>el.addEventListener("change",()=>updateOrder(el.dataset.status,el.value,undefined)));
+  orderTable.querySelectorAll("[data-robot]").forEach(el=>el.addEventListener("change",()=>updateOrder(el.dataset.robot,undefined,el.value)));
+ }catch(e){orderTable.innerHTML='<div class="order-error">Live order service is unavailable. Check the API deployment.</div>'}
+}
+async function updateOrder(id,status,robot){
+ let token=sessionStorage.getItem("duduAdminToken");
+ if(!token){token=prompt("Enter the DUDU Operations access token:");if(!token)return;sessionStorage.setItem("duduAdminToken",token)}
+ const body={id};if(status!==undefined)body.status=status;if(robot!==undefined)body.assigned_robot=robot;
+ const r=await fetch("../api/orders",{method:"PATCH",headers:{"Content-Type":"application/json","x-dudu-admin-token":token},body:JSON.stringify(body)});
+ if(r.status===401){sessionStorage.removeItem("duduAdminToken");alert("Operations token is invalid.");return}
+ if(!r.ok){alert("Could not update this order.");return}
+ await loadOrders();
+}
+capacityInput.addEventListener("change",buildSchedule);dateInput.addEventListener("change",buildSchedule);refreshOrdersButton?.addEventListener("click",loadOrders);
+buildSchedule();loadOrders();

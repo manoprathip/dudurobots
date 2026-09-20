@@ -64,7 +64,64 @@ place.onclick=async()=>{
    return;
  }
  const orders=JSON.parse(localStorage.getItem("duduOrders")||"[]");orders.unshift(order);localStorage.setItem("duduOrders",JSON.stringify(orders.slice(0,100)));
- document.querySelector("#tracking").classList.remove("hidden");document.querySelector("#order-id").textContent=order.id;document.querySelector("#tracking-title").textContent="Order received";document.querySelector("#tracking-copy").textContent="Your order is confirmed for "+order.date+" · "+order.slot+".";document.querySelector("#tracking").scrollIntoView({behavior:"smooth"});updateSlotNote();
- let progress=25;const timer=setInterval(()=>{progress=Math.min(progress+25,100);document.querySelector("#progress-bar").style.width=progress+"%";const states=[["Order received","Your order is confirmed."],["Order being prepared","The store is preparing your order."],["Loaded into DUDU","Your order is secured inside DUDU."],["DUDU on the way","DUDU is travelling to your destination."],["Arrived","DUDU has arrived."]];const idx=Math.min(Math.floor(progress/25),4);document.querySelector("#tracking-title").textContent=states[idx][0];document.querySelector("#tracking-copy").textContent=states[idx][1];if(progress===100)clearInterval(timer)},3500);
+ showTracking(order);
+ document.querySelector("#tracking").scrollIntoView({behavior:"smooth"});
+ updateSlotNote();
+ startTracking(order.id);
 };
+const trackingCopy={
+ ORDER:["Order received","Your order is confirmed and waiting for the store.","Order received"],
+ PREPARING:["Order being prepared","The store is preparing your order.","Preparing"],
+ READY:["Order ready","Your order is ready to be loaded into DUDU.","Ready"],
+ LOADED:["Loaded into DUDU","Your order is secured inside DUDU.","Loaded"],
+ "ON THE WAY":["DUDU on the way","DUDU is travelling to your destination.","On the way"],
+ DELIVERING:["DUDU on the way","DUDU is travelling to your destination.","On the way"],
+ ARRIVED:["Arrived","DUDU has arrived at your destination.","Delivered"],
+ CANCELLED:["Order cancelled","This delivery has been cancelled.","Cancelled"]
+};
+let trackingTimer=null;
+function showTracking(order){
+ document.querySelector("#tracking").classList.remove("hidden");
+ document.querySelector("#order-id").textContent=order.id;
+ const state=trackingCopy[order.status]||trackingCopy.ORDER;
+ document.querySelector("#tracking-title").textContent=state[0];
+ document.querySelector("#tracking-copy").textContent=state[1];
+ const orderEl=document.querySelector("#tracking-robot");
+ if(orderEl)orderEl.textContent=order.assigned_robot?order.assigned_robot+" · "+state[2]:state[2];
+ const steps=["ORDER","PREPARING","LOADED","ON THE WAY","ARRIVED"];
+ const statusIndex=order.status==="DELIVERING"?3:steps.indexOf(order.status);
+ const idx=Math.max(statusIndex,0);
+ document.querySelector("#progress-bar").style.width=((idx/(steps.length-1))*100)+"%";
+ document.querySelectorAll("[data-track-step]").forEach((el,i)=>{
+   el.classList.toggle("done",i<idx);
+   el.classList.toggle("active-step",i===idx);
+ });
+}
+async function refreshTracking(orderId){
+ try{
+   const r=await fetch("../api/orders?id="+encodeURIComponent(orderId),{cache:"no-store"});
+   if(!r.ok)throw new Error("Tracking unavailable");
+   const data=await r.json();
+   if(data.order){
+     showTracking(data.order);
+     const orders=JSON.parse(localStorage.getItem("duduOrders")||"[]");
+     const next=orders.map(o=>o.id===data.order.order_id?{...o,...data.order}:o);
+     localStorage.setItem("duduOrders",JSON.stringify(next));
+     if(data.order.status==="ARRIVED"||data.order.status==="CANCELLED"){
+       if(trackingTimer){clearInterval(trackingTimer);trackingTimer=null}
+     }
+   }
+ }catch(e){console.warn("DUDU tracking refresh failed.",e)}
+}
+function startTracking(orderId){
+ if(trackingTimer)clearInterval(trackingTimer);
+ refreshTracking(orderId);
+ trackingTimer=setInterval(()=>refreshTracking(orderId),5000);
+}
+function restoreLatestTracking(){
+ try{
+   const orders=JSON.parse(localStorage.getItem("duduOrders")||"[]");
+   if(orders[0]?.id){showTracking(orders[0]);startTracking(orders[0].id)}
+ }catch(e){}
+}
 buildSlots();renderMerchants();renderCart();refreshRemoteSlots();

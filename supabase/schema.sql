@@ -42,3 +42,10 @@ $$;
 
 alter table public.dudu_orders enable row level security;
 alter table public.dudu_slot_settings enable row level security;
+-- Operations fields for the pilot order workflow.
+alter table public.dudu_orders
+  add column if not exists assigned_robot text,
+  add column if not exists updated_at timestamptz not null default now();
+
+create index if not exists dudu_orders_status_idx
+  on public.dudu_orders(status, created_at desc);

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14291d">
+<title>DUDU Operations — Fleet Dashboard</title>
+<link rel="icon" type="image/png" href="../dudu-logo-web.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-page">
+<header class="app-header">
+  <a class="brand" href="index.html"><img src="../dudu-logo-web.png" alt="DUDU Robots"></a>
+  <div class="header-location">DUDU OPERATIONS <span class="dot"></span> BUSNAGO</div>
+  <a class="admin-link" href="../">Public site ↗</a>
+</header>
+<main>
+  <section class="dashboard-hero">
+    <div><p class="eyebrow">DUDU FLEET / OPERATIONS</p><h1>Move every<br><em>delivery forward.</em></h1><p class="lead">Pilot operations dashboard for orders, robot status and delivery activity.</p></div>
+    <div class="system-state"><span class="status-dot"></span><strong>System operational</strong><small>Last update · just now</small></div>
+  </section>
+  <section class="metrics">
+    <article><span>ACTIVE ORDERS</span><strong id="active-orders">4</strong><small>+2 in the last hour</small></article>
+    <article><span>AVAILABLE ROBOTS</span><strong>2 / 3</strong><small>One robot charging</small></article>
+    <article><span>DELIVERIES TODAY</span><strong>27</strong><small>Across food & retail</small></article>
+    <article><span>AVG. DELIVERY</span><strong>11 min</strong><small>From load to arrival</small></article>
+  </section>
+  <section class="ops-grid">
+    <div class="panel">
+      <div class="panel-head"><div><p class="eyebrow">LIVE / ORDERS</p><h2>Delivery queue</h2></div><span class="live-label"><i></i> LIVE</span></div>
+      <div class="order-table" id="order-table"></div>
+    </div>
+    <aside class="panel robot-panel">
+      <div class="panel-head"><div><p class="eyebrow">FLEET</p><h2>Robot status</h2></div></div>
+      <div class="robot-list">
+        <div class="robot"><div class="robot-icon">D</div><div><strong>DUDU-01</strong><span>Delivering · Order #1048</span></div><b class="green">●</b></div>
+        <div class="robot"><div class="robot-icon">D</div><div><strong>DUDU-02</strong><span>Available · Ready</span></div><b class="green">●</b></div>
+        <div class="robot"><div class="robot-icon">D</div><div><strong>DUDU-03</strong><span>Charging · 62%</span></div><b class="amber">●</b></div>
+      </div>
+      <div class="robot-footer"><span>FLEET HEALTH</span><strong>Good</strong></div>
+    </aside>
+  </section>
+  <section class="panel map-panel">
+    <div class="panel-head"><div><p class="eyebrow">LIVE / MOVEMENT</p><h2>Delivery overview</h2></div><span class="map-caption">GLOBO · BUSNAGO</span></div>
+    <div class="map"><div class="map-grid"></div><div class="mall"><span>GLOBO</span></div><div class="route route-a"></div><div class="route route-b"></div><div class="robot-pin pin-a">D1</div><div class="robot-pin pin-b">D2</div><div class="destination dest-a">A</div><div class="destination dest-b">B</div></div>
+  </section>
+</main>
+<footer><span>DUDU OPERATIONS · PILOT CONTROL</span><span>Prototype dashboard — connect to live fleet API in next phase.</span><a href="index.html">Customer app ↗</a></footer>
+<script src="admin.js"></script>
+</body>
+</html>

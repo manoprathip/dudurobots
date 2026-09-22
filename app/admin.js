@@ -47,7 +47,7 @@ async function loadOrders(){
   orderTable.innerHTML=orders.map(o=>`<div class="live-order">
    <div class="live-order-main">
     <div class="order-top"><strong>${esc(o.order_id)}</strong><span>${esc(o.delivery_date)} · ${esc(o.delivery_slot)}</span></div>
-    <div class="order-details"><b>${esc(o.merchant)}</b><span>${esc(o.destination)}</span>${o.note?`<span>Note: ${esc(o.note)}</span>`:""}</div>
+    <div class="order-details"><b>${esc(o.merchant)}</b><span>${esc(o.destination)}</span>${o.shop?`<span>Shop: ${esc(o.shop)}</span>`:""}${o.customer_id?`<span>Customer: ${esc(o.customer_id)}</span>`:""}${o.note?`<span>Note: ${esc(o.note)}</span>`:""}</div>
    </div>
    <div class="order-controls">
     <select data-status="${esc(o.order_id)}" aria-label="Order status">${statusOptions(o.status)}</select>

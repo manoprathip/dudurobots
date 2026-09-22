@@ -54,7 +54,7 @@ async function saveCustomerProfile(){
    profileStatusTitle.textContent="Profile ready";
    profileStatusCopy.textContent="You can now order. DUDU will use this profile to identify your deliveries.";
    saveProfile.textContent="Profile saved ✓";
-   document.querySelector("#order-shell").scrollIntoView({behavior:"smooth",block:"start"});
+   document.querySelector(".order-shell")?.scrollIntoView({behavior:"smooth",block:"start"});
  }catch(e){alert(e.message||"We could not save your profile.");saveProfile.textContent="Save profile & continue →"}
  finally{saveProfile.disabled=false}
 }

@@ -62,7 +62,6 @@ document.querySelectorAll("[data-auth-provider]").forEach(b=>b.onclick=()=>alert
 saveProfile?.addEventListener("click",saveCustomerProfile);
 initProfile();
 
-const SLOT_CAPACITY=4;
 function slotKey(){return dateInput?.value+"|"+slotSelect?.value}
 function getBookings(){try{return JSON.parse(localStorage.getItem("duduSlotBookings")||"{}")}catch{return {}}}
 let remoteCounts={};

@@ -21,8 +21,8 @@ export default async function handler(req,res){
    const allowed=["ORDER","PREPARING","READY"];
    if(!id||!merchant)return res.status(400).json({error:"Missing order id or merchant"});
    if(!allowed.includes(b.status))return res.status(400).json({error:"Merchant can only set ORDER, PREPARING or READY"});
-   base.searchParams.set("order_id","eq."+encodeURIComponent(id));
-   base.searchParams.set("merchant","eq."+encodeURIComponent(merchant));
+   base.searchParams.set("order_id","eq."+id);
+   base.searchParams.set("merchant","eq."+merchant);
    const r=await fetch(base.toString(),{method:"PATCH",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json","Prefer":"return=representation"},body:JSON.stringify({status:b.status,updated_at:new Date().toISOString()})});
    const data=await r.json();if(!r.ok)return res.status(r.status).json({error:data});
    if(!data.length)return res.status(404).json({error:"Order not found for this merchant"});

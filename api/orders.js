@@ -7,7 +7,7 @@ export default async function handler(req,res){
    const orderId=String(req.query?.id||"").trim();
    const limit=Math.min(Math.max(Number(req.query?.limit||50),1),100);
    const apiUrl=new URL("/rest/v1/dudu_orders",url.endsWith("/")?url:url+"/");
-   apiUrl.searchParams.set("select","id,order_id,delivery_date,delivery_slot,destination,note,merchant,status,assigned_robot,created_at,updated_at");
+   apiUrl.searchParams.set("select","id,order_id,delivery_date,delivery_slot,destination,note,merchant,status,assigned_robot,customer_id,shop,created_at,updated_at");
    if(orderId){
     apiUrl.searchParams.set("order_id","eq."+orderId);
     apiUrl.searchParams.set("limit","1");

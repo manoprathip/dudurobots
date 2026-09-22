@@ -24,6 +24,36 @@
     <div class="status-card"><span class="status-dot"></span><strong>DUDU is online</strong><small>Delivery service available</small></div>
   </section>
 
+  <section class="profile-shell" id="profile-shell">
+    <div class="section-head"><div><p class="eyebrow">WELCOME TO DUDU</p><h2>Set up your delivery profile.</h2><p class="profile-intro">One profile keeps your shop, order and delivery notifications together.</p></div><span class="step-count" id="shop-context">SHOP / CUSTOMER</span></div>
+    <div class="profile-grid">
+      <div class="profile-card">
+        <div class="shop-banner"><span>DELIVERY DESTINATION</span><strong id="shop-name">Choose your shop</strong><small id="shop-helper">Your shop can be selected from the QR you scanned.</small></div>
+        <div class="auth-options">
+          <button class="auth-btn" type="button" data-auth-provider="google"><span>G</span><div><strong>Continue with Google</strong><small>Fast account sign-in</small></div></button>
+          <button class="auth-btn" type="button" data-auth-provider="apple"><span></span><div><strong>Continue with Apple</strong><small>Private account sign-in</small></div></button>
+        </div>
+        <div class="auth-divider"><span>OR COMPLETE YOUR PROFILE</span></div>
+        <div class="profile-fields">
+          <label>Full name<input id="profile-name" autocomplete="name" placeholder="Your name"></label>
+          <label>Mobile number<input id="profile-phone" autocomplete="tel" inputmode="tel" placeholder="+39 ..."></label>
+          <label>Shop / workplace<input id="profile-shop" autocomplete="organization" placeholder="Shop 105"></label>
+        </div>
+        <label class="photo-upload">Profile photo <span>optional</span><input id="profile-photo" type="file" accept="image/*"><small>Used only to identify your DUDU account.</small></label>
+        <button class="primary profile-save" id="save-profile" type="button">Save profile & continue <b>→</b></button>
+        <p class="profile-security">Your profile is used for order identification and delivery notifications. OAuth buttons are ready for provider configuration.</p>
+      </div>
+      <div class="profile-side">
+        <div class="profile-side-icon">D</div>
+        <strong id="profile-status-title">First time here?</strong>
+        <p id="profile-status-copy">Create your DUDU profile once. Next time, your shop and details can be reused.</p>
+        <div class="profile-mini"><span>✓</span> Personal order identity</div>
+        <div class="profile-mini"><span>✓</span> Delivery notifications</div>
+        <div class="profile-mini"><span>✓</span> Shop-specific QR support</div>
+      </div>
+    </div>
+  </section>
+
   <section class="order-shell">
     <div class="section-head"><div><p class="eyebrow">01 / CHOOSE</p><h2>What would you like?</h2></div><span class="step-count">STEP 1 OF 3</span></div>
     <div class="categories">

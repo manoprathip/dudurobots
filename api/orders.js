@@ -29,6 +29,14 @@ export default async function handler(req,res){
    const r=await fetch(rpcUrl.toString(),{method:"POST",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({p_order_id:b.id,p_delivery_date:b.date,p_delivery_slot:b.slot,p_destination:b.destination,p_note:b.note||"",p_merchant:b.merchant})});
    const data=await r.json(); if(!r.ok)return res.status(r.status).json({error:data});
    if(!data.ok)return res.status(409).json({error:"This delivery slot is full.",capacity:data.capacity,used:data.used});
+   if(b.customer_id || b.shop){
+    const patchUrl=new URL("/rest/v1/dudu_orders",url.endsWith("/")?url:url+"/");
+    patchUrl.searchParams.set("order_id","eq."+b.id);
+    const patch={};
+    if(b.customer_id)patch.customer_id=String(b.customer_id).slice(0,120);
+    if(b.shop)patch.shop=String(b.shop).slice(0,120);
+    await fetch(patchUrl.toString(),{method:"PATCH",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify(patch)});
+   }
    return res.status(201).json({ok:true,capacity:data.capacity,used:data.used});
   }
   if(req.method==="PATCH"){
